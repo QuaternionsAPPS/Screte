@@ -24,7 +24,6 @@ class Matrix:
 
     def __mul__(self, other):
         if type(other) is Matrix:
-            print(self.n, ' ?=? ', other.m)
             if self.n == other.m:
                 res = [
                     [sum(row[j] * other.get_col(i)[j] for j in range(self.n)) for row in self.arr]
@@ -40,3 +39,9 @@ class Matrix:
     def __str__(self):
         print("\n{}x{} matrix \n".format(self.m, self.n))
         return '\n'.join('  '.join(["{:>4}".format(e) for e in row]) for row in self.arr)
+
+    def get_minor(self):
+        pass
+
+    def try_invese(self):
+        pass
