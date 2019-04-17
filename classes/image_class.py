@@ -15,11 +15,5 @@ class ImageClass:
         img_arr = [data[i:(i+img_width)] for i in range(0, len(data), img_width)]                 # list.__len__(data)
         return img_arr
 
-    def __init__():
+    def __init__(self):
         pass
-
-
-
-if __name__ == "__main__":
-    # ex:
-    ImageClass.read_img_to_arr("../image_examples/ex1.png")

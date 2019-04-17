@@ -25,8 +25,7 @@ class Matrix:
             if self.n == other.m:
                 res = [
                     [sum(row[j] * other.get_col(i)[j] for j in range(self.n)) for row in self.arr]
-                    for i in range(other.n)
-                    ]
+                                                                                              for i in range(other.n)]
                 return Matrix(res)
 
             raise ArithmeticError(" incompatible sizes of operands ")
@@ -37,4 +36,4 @@ class Matrix:
 
     def __str__(self):
         print("\n{}x{} matrix \n".format(self.m, self.n))
-        return '\n'.join('  '.join(["{:<4}".format(e) for e in row]) for row in self.arr)
+        return '\n'.join('  '.join(["{:>4}".format(e) for e in row]) for row in self.arr)
