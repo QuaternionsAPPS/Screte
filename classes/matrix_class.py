@@ -15,6 +15,9 @@ class Matrix:
         if c_ind < self.n:
             return [row[c_ind] for row in self.arr]
 
+    def get_cols(self):
+        return [self.get_col(i) for i in range(self.n)]
+
     def __getitem__(self, coords):
         row, col = coords
         return self.arr[row][col]
