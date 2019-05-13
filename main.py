@@ -9,7 +9,7 @@ app = Flask(__name__)
 # ~~~~~~~~~~~~~~~~~~~~ Example function -- need db communication.
 
 def get_auth_id(user_name, password):
-    return 3
+    return 0
 
 
 def add_user(name, password):

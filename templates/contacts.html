@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"></link>
+    <title>Screte</title>
+</head>
+
+<body>
+    <div class="center_log">
+        <ul style="list-style-type:none">
+            {%for c in contacts%}
+                <a href="{{url_for('send', from_id=c['id']+1, to_id=c['id']) }}">
+                    <div class="inner_center_log">
+                        <li>{{c["name"]}}</li>
+                    </div>
+                </a>
+            {%endfor%}
+        </ul>
+    </div>
+</body>
+
+</html>
