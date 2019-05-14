@@ -1,36 +1,23 @@
 from flask import Flask, request, render_template, send_from_directory
 
 
+from Screte_PRIVATE.screte_database.database import Database
+#/home/anastasiia/AL_Projects/Screte/Screte_PRIVATE/screte_database/database.py
+
+# import sys
+# print(sys.path)
+# sys.path.insert(0, "Documents/Screte_2/Screte/Screte_PRIVATE/screte_database")
+# print(sys.path)
+#
+# import Database
+
+
 app = Flask(__name__)
-# app.jinja_env.auto_reload = True
-# app.config['TEMPLATES_AUTO_RELOAD'] = True
-# app.secret_key = "super secret key"
+app.jinja_env.auto_reload = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.secret_key = "s ec re t k ey su pe r"
 
-# ~~~~~~~~~~~~~~~~~~~~ Example function -- need db communication.
-
-def get_auth_id(user_name, password):
-    return 0
-
-
-def add_user(name, password):
-    return 4
-
-
-def get_contacts(user_id):
-    return [{"id": 234, "name": "Eric"}, {"id": 345, "name": "Rita"}, {"id": 456, "name": "Tony"}]
-
-
-def has_name(username):
-    return False
-
-
-def get_name(user_id):
-    return "Noy"
-
-def get_info(user_id):
-    return {"id": 456, "name": "Tony"}
-# ~~~~~~~~~~~~~~~~~~~~
-
+db = Database()
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -43,32 +30,35 @@ def contacts():
     if request.method == "POST":
         user_name, password, rep_password = request.form.get("user_name"), \
                                             request.form.get("password"), \
-                                            request.form.get("repeated_password")
+                                            request.form.get("password_repeated")
         # register
         if rep_password:
+            f_name, l_name = request.form.get("first_name"), request.form.get("last_name")
             if rep_password == password:
-                if has_name(user_name):
-                    new_u_id = add_user(user_name, password)
-                    return render_template("contacts.html", contacts=get_contacts(new_u_id))
+                if not db.get_user_id(user_name):   # check if such name exists in db
+                    u_info = {"username": user_name,
+                              "first_name": f_name,
+                              "last_name": l_name,
+                              "password": password}
+                    if db.add_user(u_info):
+                        return render_template("contacts.html", contacts=db.get_contacts(user_name))
                 else:
                     return render_template("main.html", log_msg="", reg_msg="Sorry. This name is already taken.")
             else:
                 return render_template("main.html", log_msg="", reg_msg="You didn't repeat your password correctly.")
         # log in
         else:
-            u_id = get_auth_id(user_name, password)
-            if u_id:
-                return render_template("contacts.html", contacts=get_contacts(u_id))
+            if db.check_password(user_name, password):
+                return render_template("contacts.html", contacts=db.get_contacts(user_name))
             else:
                 return render_template("main.html", reg_msg="", log_msg="Wrong username or password. Try again.")
-    else:  # if request.method == "GET"
-        return render_template("main.html", reg_msg="", log_msg="")
+    else:
+        return render_template("main.html", reg_msg="", log_msg="")  # if request.method == "GET"
 
 
-@app.route('/send/<int:from_id>/<int:to_id>', methods=["GET", "POST"])
-def send(from_id, to_id):
-    # access to db --> info about both users
-    return render_template("send.html", users=[get_info(from_id), get_info(to_id)])
+@app.route('/send/<string:u_name>/<int:to_id>', methods=["GET", "POST"])
+def send(u_name, to_id):
+    return render_template("send.html", users=[db.get_contacts(username="Gilly")])
 
 
 @app.route('/result/<int:from_id>/<int:to_id>', methods=["GET", "POST"])
@@ -84,3 +74,6 @@ def result(from_id, to_id):
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True, use_reloader=True)
+
+    # import os
+    # print(os.path.curdir)
