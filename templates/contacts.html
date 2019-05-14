@@ -12,9 +12,9 @@
     <div class="center_log">
         <ul style="list-style-type:none">
             {%for c in contacts%}
-                <a href="{{url_for('send', from_id=c['id']+1, to_id=c['id']) }}">
+                <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
                     <div class="inner_center_log">
-                        <li>{{c["name"]}}</li>
+                        <li>{{ c }}</li>
                     </div>
                 </a>
             {%endfor%}

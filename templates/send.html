@@ -10,8 +10,8 @@
 
     <body>
         <div class="center_log" id="1">
-            <h2> Send image to {{ users[1]['name'] }}: </h2>
-            <form action="{{ url_for('result', from_id=users[0]['id'], to_id=users[1]['id']) }}" method="POST">
+            <h2> Send image to {{ to_name }}: </h2>
+            <form action="{{ url_for('result', from_name=from_name, to_name=to_name) }}" method="POST" enctype="multipart/form-data">
                 <p>
                     <input type="file" name="img" accept="image/jpeg,image/png,image/gif">
                     <input type="submit" value="Send">
