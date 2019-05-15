@@ -1,12 +1,10 @@
 import os
-import cv2
 from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 
 
-from Screte_PRIVATE.screte_database.database import Database
-import Screte_PRIVATE.screte_cryptography.example_from_Oles as eo
-from Screte_PRIVATE.screte_cryptography.image import Image, ImageLoaderAndSaver, diffie_hellman_key, form_secret_key
+from screte_database.database import Database
+from screte_cryptography.image import Image, ImageLoaderAndSaver, diffie_hellman_key, form_secret_key
 
 
 app = Flask(__name__)
