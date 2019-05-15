@@ -6,3 +6,6 @@ Screte_PRIVATE/
 
 # Virtual environment
 venv/
+
+# Secret files
+screte_database/screte_db_login.py
