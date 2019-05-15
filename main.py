@@ -69,23 +69,33 @@ def result(from_name, to_name):
         print(img)
         if img is not None:
 
-            # save image
+            # save image to "instance" directory
             img_path = os.path.join(app.instance_path, secure_filename(img.filename))
-            img.save(img_path)  # save into "instance" directory
-
-            user_info = diffie_hellman_key()
+            img.save(img_path)
 
             # read
-            img = ImageLoaderAndSaver.load_image_locally(img_path)
-            secret_key = form_secret_key(img, user_info)
-            our_img = Image.encrypt_img(img, secret_key)
-            ImageLoaderAndSaver.save_image_locally(our_img, "secret.bmp")
+            img_data = ImageLoaderAndSaver.load_image_locally(img_path)
 
+            fk = db.get_user_info_for_encryption(from_name)["sh_key"]
+            tk = db.get_user_info_for_encryption(to_name)["sh_key"]
+
+            sh_key = diffie_hellman_key(fk, tk)
+            the_key = form_secret_key(img_data, sh_key)
+            print(type(the_key))
+            print(the_key)
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+            encr_img = Image.encrypt_img(img_data, the_key)
+            ImageLoaderAndSaver.save_image_locally(encr_img, img_path)
+
+            # decrypt
             enc_img = ImageLoaderAndSaver.load_image_locally("secret.bmp")
-            our_img = Image.decrypt_img(enc_img, secret_key)
-            ImageLoaderAndSaver.save_image_locally(our_img, "decrypted.jpg")
+            new_the_key = form_secret_key(enc_img, sh_key)
 
-        return render_template("result.html", img_url="")
+            our_img = Image.decrypt_img(enc_img, new_the_key)
+            ImageLoaderAndSaver.save_image_locally(our_img, img.filename)
+
+        return render_template("result.html", img_name=img.filename)
     else:
         return render_template("result.html", img_url="")
 

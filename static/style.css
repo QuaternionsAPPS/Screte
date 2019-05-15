@@ -43,5 +43,5 @@
         margin-bottom: 1em;
         width: 5em;
         margin-left: calc((100% - 5em)/2);
-        border-radius: 0.75em;
+        border-radius: 1em;
     }

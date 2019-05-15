@@ -9,17 +9,18 @@
 
 <body>
     <div class="center_log">
-        {% if img_url %}
+
+        {% if img_name %}
             <h2> Your image was successfully encrypted. You can see/share it with following link: </h2>
-            <a href="{{ img_url }}">
-                <img src="{{ img_url }}">
-            </a>
-                <br>
-            <p style="color: honeydew">{{ img_url }}</p>
+
+        	<img src="instance/ex1.png">
+            <br>
+            <p style="color: honeydew">URL</p>
 
         {% else %}
             <h2>Something went wrong. Sorry, but your image couldn't be encrypted. Please report your problem and try again later.</h2>
-        {%endif%}
+
+        {% endif %}
     </div>
 
 </body>
