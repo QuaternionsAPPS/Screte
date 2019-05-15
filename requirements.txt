@@ -1,2 +1,7 @@
-Pillow
+Flask==0.12.4
+Werkzeug<0.13.0,>=0.12.0
 numpy
+pyDH
+opencv-python
+mysql-client
+dropbox

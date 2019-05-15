@@ -3,3 +3,9 @@ Screte_PRIVATE/
 
 # IDEA configurations
 .idea/
+
+# Virtual environment
+venv/
+
+# Secret files
+screte_database/screte_db_login.py

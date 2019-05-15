@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"></link>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+        <title>Screte</title>
+    </head>
+
+    <body>
+        <div class="center_log" id="1">
+            <h2> Send image to {{ to_name }}: </h2>
+            <form action="{{ url_for('result', from_name=from_name, to_name=to_name) }}" method="POST" enctype="multipart/form-data">
+                <p>
+                    <input type="file" name="img" accept="image/jpeg,image/png,image/gif">
+                    <input type="submit" value="Send">
+                </p>
+            </form>
+
+        </div>
+    </body>
+
+</html>

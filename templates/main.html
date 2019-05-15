@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"></link>
+    <title>Screte</title>
+    </head>
+
+    <body>
+
+        <div class="center_log" id="1">
+            <h3> {{ msg }}</h3>
+            <h1> Log in: </h1>
+            <form action="{{ url_for('contacts') }}" method="POST">
+                <input name="user_name" type="text" placeholder="user name" aria-label="user name"/>
+                <input name="password" type="password" placeholder="password"/>
+                <button type="submit" class="center_button">Log In</button>
+            </form>
+        </div>
+
+        <div class="center_log" id="2">
+            <h1> <span style="font-size: 0.8em"> or </span> <br> Create an account: </h1>
+            <form action="{{ url_for('contacts') }}" method="POST">
+                <input name="new_user_name" type="text" placeholder="user name" aria-label="user name"/>
+                <input name="first_name" type="text" placeholder="First name" aria-label="First name"/>
+                <input name="last_name" type="text" placeholder="Last name" aria-label="Last name"/>
+                <input name="new_password" type="password" placeholder="password"/>
+                <input name="new_password_repeated" type="password" placeholder="password_repeated"/>
+                <button type="submit" class="center_button">Sign Up</button>
+            </form>
+        </div>
+    </body>
+
+</html>
