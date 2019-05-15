@@ -7,7 +7,7 @@ import pyDH.pyDH as pyDH
 class Database:
     def __init__(self):
         self.conn = mysql.connector.connect(host=login.server, user=login.username,
-                                       password=login.password, database=login.db_name)
+                                            password=login.password, database=login.db_name)
         self.cursor = self.conn.cursor()
 
     def __del__(self):
