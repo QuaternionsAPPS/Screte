@@ -53,7 +53,7 @@ def contacts():
             return render_template("main.html", reg_msg="", log_msg="Wrong username or password. Try again.")
 
     elif request.method == "GET":
-        return render_template("main.html", reg_msg="", log_msg="")  # if request.method == "GET"
+        return render_template("main.html", reg_msg="", log_msg="")
 
 
 @app.route('/send/<string:from_name>/<string:to_name>', methods=["GET", "POST"])
