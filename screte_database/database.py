@@ -47,13 +47,17 @@ class Database:
                       'password': varchar(32)}
         :return: True if everything is okay, False otherwise.
         """
-        if user.keys() != {"username", "first_name", "last_name", "password"}:
+        key_check_set = {"username", "first_name", "last_name", "password"}
+        check_list = [k for k in key_check_set if k not in user.keys()]
+        if len(check_list) > 0:
             return False
 
         if (len(user["username"]) > 32) or (len(user["first_name"]) > 32) or (len(user["last_name"]) > 32) or (len(user["password"]) > 32):
+            print('len')
             return False
 
         if self.get_general_user_info(user["username"]) is not None:
+            print('exists')
             return False
 
         now = datetime.datetime.now()
@@ -159,6 +163,7 @@ class Database:
         raw_contacts += self.cursor.fetchall()
 
         contacts = [self.get_username(contact[0]) for contact in raw_contacts]
+        contacts.append(username)
 
         return contacts
 

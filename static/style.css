@@ -32,6 +32,8 @@
     a {color: honeydew; }
 
     input {
+        text-align:center;
+        font-family: "Fira Sans", serif;
         height:2em;
         width: 30%;
         margin: 0.5em;
@@ -43,5 +45,5 @@
         margin-bottom: 1em;
         width: 5em;
         margin-left: calc((100% - 5em)/2);
-        border-radius: 1em;
+        border-radius: 15%;
     }

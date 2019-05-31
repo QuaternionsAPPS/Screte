@@ -33,6 +33,10 @@ class ImageLoaderAndSaver:
         return cv2.imread(path)
 
     @classmethod
+    def load_uploaded_image(cls, req_img):
+        return cv2.imdecode(np.fromstring(req_img.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+
+    @classmethod
     def load_image_by_url(cls, path):
         pass
 
