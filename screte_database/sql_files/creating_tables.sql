@@ -6,7 +6,7 @@ password varchar(32) not null,
 first_name varchar(32) not null,
 last_name varchar(32) not null,
 registration_time varchar(17) not null,
-sh_key int not null,
+sh_key varchar(618) not null,
 primary key(id));
 
 create table pictures (id int not null auto_increment,

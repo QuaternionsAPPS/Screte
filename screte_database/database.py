@@ -1,7 +1,9 @@
-import mysql.connector
-import screte_database.screte_db_login as login
 import datetime
-import pyDH.pyDH as pyDH
+
+import mysql.connector
+
+import screte_database.screte_db_login as login
+from screte_cryptography.image import diffie_hellman_public_key
 
 
 class Database:
@@ -14,6 +16,13 @@ class Database:
         self.conn.commit()
         self.conn.close()
         self.cursor.close()
+
+    @staticmethod
+    def _current_time():
+        now = datetime.datetime.now()
+        today = '{}:{}:{}_{}-{}-{}'.format(str(now.hour).zfill(2), str(now.minute).zfill(2), str(now.second).zfill(2),
+                                           str(now.day).zfill(2), str(now.month).zfill(2), str(now.year)[-2:])
+        return today
 
     def get_user_id(self, username):
         """
@@ -53,22 +62,17 @@ class Database:
             return False
 
         if (len(user["username"]) > 32) or (len(user["first_name"]) > 32) or (len(user["last_name"]) > 32) or (len(user["password"]) > 32):
-            print('len')
             return False
 
         if self.get_general_user_info(user["username"]) is not None:
-            print('exists')
             return False
 
-        now = datetime.datetime.now()
-        today = '{}:{}:{}_{}-{}-{}'.format(str(now.hour).zfill(2), str(now.minute).zfill(2), str(now.second).zfill(2),
-                                           str(now.day).zfill(2), str(now.month).zfill(2), str(now.year)[-2:])
+        today = self._current_time()
 
-        d = pyDH.DiffieHellman()
-        sh_key = d.gen_public_key()
+        pub_key = diffie_hellman_public_key()
 
         self.cursor.execute("INSERT INTO users (username, first_name, last_name, password, registration_time, sh_key) VALUES (%s, %s, %s, %s, %s, %s)",
-                       (user["username"], user["first_name"], user["last_name"], user["password"], today, sh_key))
+                       (user["username"], user["first_name"], user["last_name"], user["password"], today, str(pub_key)))
 
         self.conn.commit()
 
@@ -115,7 +119,7 @@ class Database:
         user_info = self.cursor.fetchone()
 
         if user_info is not None:
-            return {"first_name": user_info[0], "last_name": user_info[1], "sh_key": user_info[2]}
+            return {"first_name": user_info[0], "last_name": user_info[1], "sh_key": int(user_info[2])}
 
     def add_contact(self, username1, username2):
         """
@@ -171,30 +175,35 @@ class Database:
         """
         :param picture: {"from_user": username,
                          "to_user": username,
-                         "url_address": varchar(255),
                          "info_from_user": varchar(255)}
-        :return: True if everything is okay, False -- otherwise.
+        :return: id of picture if everything is okay, False -- otherwise.
         """
-        if picture.keys() != {"from_user", "to_user", "url_address", "info_from_user"}:
+        key_check_set = {"from_user", "to_user", "info_from_user"}
+        check_list = [k for k in key_check_set if k not in picture.keys()]
+        if len(check_list) > 0:
             return False
+
         if (self.get_general_user_info(picture["from_user"]) is None) and \
                 (self.get_general_user_info(picture["to_user"] is None)):
             return False
-        if (len(picture["url_address"]) > 255) or (len(picture["info_from_user"]) > 255):
+
+        if len(picture["info_from_user"]) > 255:
             return False
 
-        self.cursor.execute("INSERT INTO pictures (from_user_id, to_user_id, url_address, had_been_read, info_from_user) VALUES (%s, %s, %s, %s, %s)",
-                       (self.get_user_id(picture["from_user"]), self.get_user_id(picture["to_user"]), picture["url_address"], 0, picture["info_from_user"]))
+        self.cursor.execute("INSERT INTO pictures (from_user_id, to_user_id, had_been_read, info_from_user) VALUES (%s, %s, %s, %s)",
+                       (self.get_user_id(picture["from_user"]), self.get_user_id(picture["to_user"]), 0, picture["info_from_user"]))
+
+        picture_id = self.cursor.lastrowid
 
         self.conn.commit()
 
-        return True
+        return picture_id
 
     def get_last_pictures(self, username):
         """
         :param username: varchar(32)
         :return: [{"from_user": username,
-                   "url_address": varchar(255)}, ...]
+                   "id": int }, ...]
                    False -- otherwise
         """
         if self.get_general_user_info(username) is None:
@@ -202,14 +211,14 @@ class Database:
 
         addresser = self.get_user_id(username)
 
-        self.cursor.execute("SELECT from_user_id, url_address from pictures WHERE to_user_id = (%s) and had_been_read = 0",
+        self.cursor.execute("SELECT from_user_id, id from pictures WHERE to_user_id = (%s) and had_been_read = 0",
                             (addresser, ))
         raw_pictures = self.cursor.fetchall()
         pictures = []
         for pic in raw_pictures:
             self.cursor.execute("UPDATE pictures SET had_been_read = 1 WHERE from_user_id = (%s) and to_user_id = (%s)",
                                 (pic[0], addresser))
-            pictures.append({"from_user": self.get_username(pic[0]), "url_address": pic[1]})
+            pictures.append({"from_user": self.get_username(pic[0]), "id": pic[1]})
 
         self.conn.commit()
         return pictures
@@ -218,7 +227,7 @@ class Database:
         """
         :param username: varchar(32)
         :return: [{"to_user": username,
-                   "url_address": varchar(255)}, ...]
+                   "id": int}, ...]
                    False -- otherwise
         """
         if self.get_general_user_info(username) is None:
@@ -226,12 +235,12 @@ class Database:
 
         sender = self.get_user_id(username)
 
-        self.cursor.execute("SELECT to_user_id, url_address from pictures WHERE from_user_id = (%s)",
+        self.cursor.execute("SELECT to_user_id, id from pictures WHERE from_user_id = (%s)",
                            (sender,))
         raw_pictures = self.cursor.fetchall()
         pictures = []
         for pic in raw_pictures:
-            pictures.append({"to_user": self.get_username(pic[0]), "url_address": pic[1]})
+            pictures.append({"to_user": self.get_username(pic[0]), "id": pic[1]})
 
         return pictures
 
@@ -239,7 +248,7 @@ class Database:
         """
         :param username: varchar(32)
         :return: [{"from_user": username,
-                   "url_address": varchar(255)}, ...]
+                   "id": int}, ...]
                    False -- otherwise
         """
         if self.get_general_user_info(username) is None:
@@ -247,20 +256,39 @@ class Database:
 
         receiver = self.get_user_id(username)
 
-        self.cursor.execute("SELECT from_user_id, url_address from pictures WHERE to_user_id = (%s)",
+        self.cursor.execute("SELECT from_user_id, id from pictures WHERE to_user_id = (%s)",
                            (receiver,))
         raw_pictures = self.cursor.fetchall()
         pictures = []
         for pic in raw_pictures:
-            pictures.append({"from_user": self.get_username(pic[0]), "url_address": pic[1]})
+            pictures.append({"from_user": self.get_username(pic[0]), "id": pic[1]})
 
         return pictures
 
     def start_session(self, username):
-        pass
+        user_id = self.get_user_id(username)
+        start_time = self._current_time()
+        number_of_encoded_pictures = len(self.get_all_send_pictures(username))
+        number_of_decoded_pictures = len(self.get_all_received_pictures(username))
+        self.cursor.execute("INSERT INTO sessions (user_id, start_time, finish_time, number_of_encoded_pictures, number_of_decoded_pictures) VALUES (%s, %s, %s, %s, %s)",
+                       (user_id, start_time, start_time, number_of_encoded_pictures, number_of_decoded_pictures))
+
+        self.conn.commit()
 
     def end_session(self, username):
-        pass
+        user_id = self.get_user_id(username)
+        self.cursor.execute("SELECT id, number_of_encoded_pictures, number_of_decoded_pictures FROM sessions WHERE user_id = (%s)",
+                            (user_id,))
+        raw_session = self.cursor.fetchall()[-1]
+        finish_time = self._current_time()
+        number_of_encoded_pictures = len(self.get_all_send_pictures(username))
+        number_of_decoded_pictures = len(self.get_all_received_pictures(username))
+
+        self.cursor.execute("UPDATE sessions SET finish_time = (%s), number_of_encoded_pictures = (%s), number_of_decoded_pictures = (%s) WHERE id = (%s)",
+                            (finish_time, number_of_encoded_pictures - raw_session[1], number_of_decoded_pictures - raw_session[2], user_id))
+
+        self.conn.commit()
+
 
 
 
