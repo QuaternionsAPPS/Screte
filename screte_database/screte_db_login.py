@@ -1,5 +1,0 @@
-server = ''
-db_name = ''
-username = ''
-password = ''
-port_number = ''
