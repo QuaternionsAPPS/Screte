@@ -4,7 +4,8 @@ from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 
 from screte_database.database import Database
-from screte_cryptography.image import Image, ImageLoaderAndSaver, diffie_hellman_key, form_secret_key
+from screte_cryptography.image import Image, ImageLoaderAndSaver, form_secret_key
+from screte_cryptography.diffie_hellman_keys import diffie_hellman_shared_key
 
 
 db = Database()
@@ -75,7 +76,7 @@ def result(from_name, to_name):
             fk = db.get_user_info_for_encryption(from_name)["sh_key"]
             tk = db.get_user_info_for_encryption(to_name)["sh_key"]
 
-            sh_key = diffie_hellman_key(fk, tk)
+            sh_key = diffie_hellman_shared_key(fk, tk)
             the_key = form_secret_key(img_data, sh_key)
             encr_img = Image.encrypt_img(img_data, the_key)
 

@@ -3,26 +3,11 @@ import hashlib
 from statistics import mean
 
 import cv2
-import pyDH
+
+import screte_filesystem.dropbox_filesystem as filesystem
 
 
 PRIME_NUMBER = 257
-
-
-def diffie_hellman_key(d1_pubkey, d2_pubkey):
-    d1 = pyDH.DiffieHellman()
-    d2 = pyDH.DiffieHellman()
-
-    d1_sharedkey = d1.gen_shared_key(d2_pubkey)
-    d2_sharedkey = d2.gen_shared_key(d1_pubkey)
-
-    return d2_sharedkey
-
-
-def diffie_hellman_public_key():
-    d = pyDH.DiffieHellman()
-    sh_key = d.gen_public_key()
-    return sh_key
 
 
 def form_secret_key(img, user_info):
@@ -44,16 +29,29 @@ class ImageLoaderAndSaver:
         return cv2.imdecode(np.fromstring(req_img.read(), np.uint8), cv2.IMREAD_UNCHANGED)
 
     @classmethod
-    def load_image_by_url(cls, path):
-        pass
-
-    @classmethod
     def save_image_locally(cls, img, path):
         cv2.imwrite(path, img)
 
     @classmethod
-    def save_image_by_url(cls, path):
-        pass
+    def upload_image_to_filesystem(cls, img, id):
+        """
+        Uploads image to dropbox.
+        :param img: cv2.img
+        :param id: int -- id of image
+        :return: None
+        """
+        print(type(img))
+        img_str = cv2.imencode('.bmp', img)[1].tostring()
+        filesystem.upload_image(img_str, id)
+
+    @classmethod
+    def download_image_from_filesystem(cls, id, path=''):
+        """
+        :param id: int -- id of image
+        :param path: if needed -- location of directory, where to save image (for example "../instances/")
+        :return: None
+        """
+        filesystem.download_image(id, path)
 
 
 class Image:

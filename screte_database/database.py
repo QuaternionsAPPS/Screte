@@ -3,7 +3,7 @@ import datetime
 import mysql.connector
 
 import screte_database.screte_db_login as login
-from screte_cryptography.image import diffie_hellman_public_key
+from screte_cryptography.diffie_hellman_keys import diffie_hellman_public_key
 
 
 class Database:
