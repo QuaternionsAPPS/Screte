@@ -3,8 +3,9 @@ import hashlib
 from statistics import mean
 
 import cv2
+import time
 
-import screte_filesystem.dropbox_filesystem as filesystem
+# import screte_filesystem.dropbox_filesystem as filesystem
 
 
 PRIME_NUMBER = 257
@@ -40,7 +41,6 @@ class ImageLoaderAndSaver:
         :param id: int -- id of image
         :return: None
         """
-        print(type(img))
         img_str = cv2.imencode('.bmp', img)[1].tostring()
         filesystem.upload_image(img_str, id)
 
@@ -82,13 +82,16 @@ class Image:
         decrypted_layer = (layer * reverse_key - 1) % PRIME_NUMBER
         return decrypted_layer
 
+
     @classmethod
     def decrypt_img(cls, img, secret_key):
         b, g, r = cv2.split(img)
 
         reverse_key = np.ones(secret_key.shape)
-        for i in range(PRIME_NUMBER - 2):
-            reverse_key = reverse_key * secret_key % PRIME_NUMBER
+        for i in range(reverse_key.shape[0]):
+            for j in range(reverse_key.shape[1]):
+                reverse_key[i][j] = pow(int(secret_key[i][j]),
+                                        PRIME_NUMBER - 2, PRIME_NUMBER)
 
         encrypted_b = Image.decrypt_layer(b, reverse_key)
         encrypted_g = Image.decrypt_layer(g, reverse_key)
@@ -118,3 +121,4 @@ class Image:
 
         brg_img = cv2.merge([new_b, new_g, new_r])
         return brg_img
+
