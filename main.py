@@ -110,10 +110,12 @@ def result(from_name, to_name):
 
     # read image
     elif request.method == "GET":
-        print("get")
-        img_id = 33
-        ImageLoaderAndSaver.download_image_from_filesystem(img_id, 'static')
-        return render_template("result.html", img_name=str(img_id)+".jpg")
+        img_id_list = db.get_not_read_pictures(from_name, to_name)
+        img_names = []
+        for img_id in img_id_list:
+            ImageLoaderAndSaver.download_image_from_filesystem(img_id, 'static')
+            img_names.append(str(img_id)+".jpg")
+        return render_template("result_recieve.html", img_names=img_names)
 
 
 if __name__ == '__main__':
