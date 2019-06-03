@@ -8,7 +8,7 @@ from screte_cryptography.image import Image, ImageLoaderAndSaver, form_secret_ke
 from screte_cryptography.diffie_hellman_keys import diffie_hellman_shared_key
 
 
-# db = Database()
+db = Database()
 
 
 def start_app():

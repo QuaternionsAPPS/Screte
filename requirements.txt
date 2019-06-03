@@ -3,5 +3,5 @@ Werkzeug
 numpy
 pyDH
 opencv-python
-mysql
+psycopg2
 dropbox

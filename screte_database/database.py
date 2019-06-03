@@ -17,36 +17,40 @@ class Database:
         self.conn.close()
         self.cursor.close()
 
-    @staticmethod
-    def _current_time():
-        now = datetime.datetime.now()
-        today = '{}:{}:{}_{}-{}-{}'.format(str(now.hour).zfill(2), str(now.minute).zfill(2), str(now.second).zfill(2),
-                                           str(now.day).zfill(2), str(now.month).zfill(2), str(now.year)[-2:])
-        return today
-
-    def get_user_id(self, username):
+    def set_ip_address(self, username, ip_address):
         """
         :param username: varchar(32)
-        :return: integer
-                 None - otherwise
+        :param ip_address: varchar(15)
+        :return: True -- if everything is okay, False -- otherwise
         """
-        self.cursor.execute("SELECT (id) FROM users WHERE username = (%s)", (username,))
-        user_id = self.cursor.fetchone()
+        if not self.get_general_user_info(username):
+            return False
 
-        if user_id is not None:
-            return user_id[0]
+        self.cursor.execute("UPDATE users SET ip_address = (%s) WHERE username = (%s)", (ip_address, username))
+        return True
 
-    def get_username(self, id):
+    def reset_ip_address(self, username):
         """
-        :param id: integer
-        :return: username: varchar(32)
-                None - otherwise
+        :param username: varchar(32)
+        :return: True -- if everything is okay, False -- otherwise
         """
-        self.cursor.execute("SELECT (username) FROM users WHERE id = (%s)", (id,))
-        username = self.cursor.fetchone()
+        if not self.get_general_user_info(username):
+            return False
 
-        if username is not None:
-            return username[0]
+        self.cursor.execute("UPDATE users SET ip_address = (%s) WHERE username = (%s)", (None, username))
+        return True
+
+    def get_ip_address(self, username):
+        """
+        :param username: varchar(32)
+        :return: ip_address: varchar(15)
+        """
+        if not self.get_general_user_info(username):
+            return False
+
+        self.cursor.execute("SELECT ip_address FROM users WHERE username = (%s)", (username, ))
+        ip_address = self.cursor.fetchone()
+        return ip_address[0]
 
     def add_user(self, user):
         """
@@ -131,8 +135,8 @@ class Database:
         if (self.get_general_user_info(username1) is None) or (self.get_general_user_info(username2) is None):
             return False
 
-        user_id_1 = self.get_user_id(username1)
-        user_id_2 = self.get_user_id(username2)
+        user_id_1 = self._get_user_id(username1)
+        user_id_2 = self._get_user_id(username2)
 
         self.cursor.execute("SELECT * from contacts WHERE 1_user_id = (%s) and 2_user_id = (%s)", (user_id_1, user_id_2))
         contacts = self.cursor.fetchall()
@@ -160,13 +164,13 @@ class Database:
         if self.get_general_user_info(username) is None:
             return False
 
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self.cursor.execute("SELECT 2_user_id FROM contacts WHERE 1_user_id = (%s)", (user_id,))
         raw_contacts = self.cursor.fetchall()
         self.cursor.execute("SELECT 1_user_id FROM contacts WHERE 2_user_id = (%s)", (user_id,))
         raw_contacts += self.cursor.fetchall()
 
-        contacts = [self.get_username(contact[0]) for contact in raw_contacts]
+        contacts = [self._get_username(contact[0]) for contact in raw_contacts]
         contacts.append(username)
 
         return contacts
@@ -191,7 +195,7 @@ class Database:
             return False
 
         self.cursor.execute("INSERT INTO pictures (from_user_id, to_user_id, had_been_read, info_from_user) VALUES (%s, %s, %s, %s)",
-                       (self.get_user_id(picture["from_user"]), self.get_user_id(picture["to_user"]), 0, picture["info_from_user"]))
+                            (self._get_user_id(picture["from_user"]), self._get_user_id(picture["to_user"]), 0, picture["info_from_user"]))
 
         picture_id = self.cursor.lastrowid
 
@@ -199,96 +203,134 @@ class Database:
 
         return picture_id
 
-    def get_last_pictures(self, username):
+    def mark_picture_as_read(self, id):
         """
-        :param username: varchar(32)
-        :return: [{"from_user": username,
-                   "id": int }, ...]
-                   False -- otherwise
+        :param id: id (int) of picture
+        :return: True -- if everything is okay, False -- otherwise
         """
-        if self.get_general_user_info(username) is None:
+        self.cursor.execute("SELECT * FROM pictures WHERE id = (%s)", (id,))
+        picture = self.cursor.fetchone()
+        if picture is None:
+            return False
+        self.cursor.execute("UPDATE pictures SET had_been_read = 1 WHERE id = (%s)", (id,))
+        return True
+
+    def get_not_read_pictures(self, from_username, to_username):
+        """
+        :param from_username: varchar(32)
+        :param to_username: varchar(32)
+        :return: [id1, id2 ... ]
+                 False -- otherwise
+        """
+        if self.get_general_user_info(from_username) is None:
             return False
 
-        addresser = self.get_user_id(username)
-
-        self.cursor.execute("SELECT from_user_id, id from pictures WHERE to_user_id = (%s) and had_been_read = 0",
-                            (addresser, ))
-        raw_pictures = self.cursor.fetchall()
-        pictures = []
-        for pic in raw_pictures:
-            self.cursor.execute("UPDATE pictures SET had_been_read = 1 WHERE from_user_id = (%s) and to_user_id = (%s)",
-                                (pic[0], addresser))
-            pictures.append({"from_user": self.get_username(pic[0]), "id": pic[1]})
-
-        self.conn.commit()
-        return pictures
-
-    def get_all_send_pictures(self, username):
-        """
-        :param username: varchar(32)
-        :return: [{"to_user": username,
-                   "id": int}, ...]
-                   False -- otherwise
-        """
-        if self.get_general_user_info(username) is None:
+        if self.get_general_user_info(to_username) is None:
             return False
 
-        sender = self.get_user_id(username)
+        from_id = self._get_user_id(from_username)
+        to_id = self._get_user_id(to_username)
 
-        self.cursor.execute("SELECT to_user_id, id from pictures WHERE from_user_id = (%s)",
-                           (sender,))
+        self.cursor.execute("SELECT id from pictures WHERE from_user_id = (%s) and to_user_id = (%s) and had_been_read = 0",
+                            (from_id, to_id))
         raw_pictures = self.cursor.fetchall()
-        pictures = []
-        for pic in raw_pictures:
-            pictures.append({"to_user": self.get_username(pic[0]), "id": pic[1]})
 
-        return pictures
+        return [pic[0] for pic in raw_pictures]
 
-    def get_all_received_pictures(self, username):
+    def get_all_pictures(self, from_username, to_username):
         """
         :param username: varchar(32)
-        :return: [{"from_user": username,
-                   "id": int}, ...]
+        :return: [ id1, id2, ...]
                    False -- otherwise
         """
-        if self.get_general_user_info(username) is None:
+        if self.get_general_user_info(from_username) is None:
             return False
 
-        receiver = self.get_user_id(username)
+        if self.get_general_user_info(to_username) is None:
+            return False
 
-        self.cursor.execute("SELECT from_user_id, id from pictures WHERE to_user_id = (%s)",
-                           (receiver,))
+        from_id = self._get_user_id(from_username)
+        to_id = self._get_user_id(to_username)
+
+        self.cursor.execute(
+            "SELECT id from pictures WHERE from_user_id = (%s) and to_user_id = (%s)",
+            (from_id, to_id))
         raw_pictures = self.cursor.fetchall()
-        pictures = []
-        for pic in raw_pictures:
-            pictures.append({"from_user": self.get_username(pic[0]), "id": pic[1]})
 
-        return pictures
+        return [pic[0] for pic in raw_pictures]
 
     def start_session(self, username):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         start_time = self._current_time()
-        number_of_encoded_pictures = len(self.get_all_send_pictures(username))
-        number_of_decoded_pictures = len(self.get_all_received_pictures(username))
+        number_of_encoded_pictures = self._num_all_send_pictures(username)
+        number_of_decoded_pictures = self._num_all_received_pictures(username)
         self.cursor.execute("INSERT INTO sessions (user_id, start_time, finish_time, number_of_encoded_pictures, number_of_decoded_pictures) VALUES (%s, %s, %s, %s, %s)",
                        (user_id, start_time, start_time, number_of_encoded_pictures, number_of_decoded_pictures))
 
         self.conn.commit()
 
     def end_session(self, username):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self.cursor.execute("SELECT id, number_of_encoded_pictures, number_of_decoded_pictures FROM sessions WHERE user_id = (%s)",
                             (user_id,))
         raw_session = self.cursor.fetchall()[-1]
         finish_time = self._current_time()
-        number_of_encoded_pictures = len(self.get_all_send_pictures(username))
-        number_of_decoded_pictures = len(self.get_all_received_pictures(username))
+        number_of_encoded_pictures = self._num_all_send_pictures(username)
+        number_of_decoded_pictures = self._num_all_received_pictures(username)
 
         self.cursor.execute("UPDATE sessions SET finish_time = (%s), number_of_encoded_pictures = (%s), number_of_decoded_pictures = (%s) WHERE id = (%s)",
                             (finish_time, number_of_encoded_pictures - raw_session[1], number_of_decoded_pictures - raw_session[2], user_id))
 
         self.conn.commit()
 
+    #
+    #   Private functions
+    #
+
+    @staticmethod
+    def _current_time():
+        now = datetime.datetime.now()
+        today = '{}:{}:{}_{}-{}-{}'.format(str(now.hour).zfill(2), str(now.minute).zfill(2), str(now.second).zfill(2),
+                                           str(now.day).zfill(2), str(now.month).zfill(2), str(now.year)[-2:])
+        return today
+
+    def _get_user_id(self, username):
+        """
+        :param username: varchar(32)
+        :return: integer
+                 None - otherwise
+        """
+        self.cursor.execute("SELECT (id) FROM users WHERE username = (%s)", (username,))
+        user_id = self.cursor.fetchone()
+
+        if user_id is not None:
+            return user_id[0]
+
+    def _get_username(self, id):
+        """
+        :param id: integer
+        :return: username: varchar(32)
+                None - otherwise
+        """
+        self.cursor.execute("SELECT (username) FROM users WHERE id = (%s)", (id,))
+        username = self.cursor.fetchone()
+
+        if username is not None:
+            return username[0]
+
+    def _num_all_send_pictures(self, username):
+        total = 0
+        contacts = self.get_contacts(username)
+        for to_user in contacts:
+            total += len(self.get_all_pictures(username, to_user))
+        return total
+
+    def _num_all_received_pictures(self, username):
+        total = 0
+        contacts = self.get_contacts(username)
+        for from_user in contacts:
+            total += len(self.get_all_pictures(from_user, username))
+        return total
 
 
 
