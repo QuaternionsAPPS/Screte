@@ -11,11 +11,10 @@
     <div class="center_log">
 
         {% if img_name %}
-            <h2> Your image was successfully encrypted. You can see/share it with following link: </h2>
+            <h2> Your image was successfully encrypted. You can see / share it with following link: </h2>
 
-        	<img src="instance/ex1.png">
-            <br>
-            <p style="color: honeydew">URL</p>
+        	<img src= {{ url_for('static', filename = img_name) }}> <br>
+            <button type="submit" class="center_button"> Decrypt </button>
 
         {% else %}
             <h2>Something went wrong. Sorry, but your image couldn't be encrypted. Please report your problem and try again later.</h2>

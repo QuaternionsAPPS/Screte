@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from werkzeug.utils import secure_filename
 
 from screte_database.database import Database
@@ -22,9 +22,13 @@ def start_app():
 app = start_app()
 
 
+@app.route("/get_my_ip", methods=["GET"])
+def get_my_ip():
+    return jsonify({'ip': request.remote_addr}), 200
+
+
 @app.route('/', methods=["GET", "POST"])
 def start():
-    db.add_user("logan", "")
     return render_template("main.html")
 
 
@@ -47,7 +51,8 @@ def contacts():
 
         # log in
         else:
-            user_name, password = request.form.get("user_name"), request.form.get("password")
+            user_name, password = request.form.get("name"), request.form.get("password")
+            print(user_name, password)
 
             if db.check_password(user_name, password):
                 return render_template("contacts.html", contacts=db.get_contacts(user_name), self_name=user_name)
@@ -64,8 +69,11 @@ def send(from_name, to_name):
 
 @app.route('/result/<string:from_name>/<string:to_name>', methods=["GET", "POST"])
 def result(from_name, to_name):
+
+    # send image
     if request.method == "POST":
-        # img = request.form.get("img")
+        print("post")
+
         img = request.files["img"]
         print(img)
         if img is not None:
@@ -80,11 +88,13 @@ def result(from_name, to_name):
             the_key = form_secret_key(img_data, sh_key)
             encr_img = Image.encrypt_img(img_data, the_key)
 
-            # save image to "instance" directory
-            img_file_name = secure_filename(img.filename)[:img.filename.rfind(".")] + ".bmp"
-            img_path = os.path.join(app.instance_path, img_file_name)
+            # img_file_name = secure_filename(img.filename)[:img.filename.rfind(".")] + ".bmp"
+            # img_path = os.path.join(app.instance_path, img_file_name)
 
-            ImageLoaderAndSaver.save_image_locally(encr_img, img_path)
+            # save image
+            enr_img_id = db.add_picture({"from_user": from_name, "to_user": to_name, "info_from_user": ""})
+            ImageLoaderAndSaver.upload_image_to_filesystem(encr_img, enr_img_id)
+            ImageLoaderAndSaver.download_image_from_filesystem(enr_img_id, "./static/")
 
             # decrypt
             '''
@@ -94,11 +104,17 @@ def result(from_name, to_name):
             our_img = Image.decrypt_img(enc_img, new_the_key)
             ImageLoaderAndSaver.save_image_locally(our_img, img.filename)
             '''
+            return render_template("result.html", img_name=str(enr_img_id)+".jpg")
+        else:
+            return render_template("result.html", img_id=None)
 
-        return render_template("result.html", img_name=img.filename)
-    else:
-        return render_template("result.html", img_url="")
+    # read image
+    elif request.method == "GET":
+        print("get")
+        img_id = 33
+        ImageLoaderAndSaver.download_image_from_filesystem(img_id, 'static')
+        return render_template("result.html", img_name=str(img_id)+".jpg")
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080, debug=True, use_reloader=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
