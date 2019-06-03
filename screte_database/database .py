@@ -1,6 +1,7 @@
 import datetime
 
-import mysql.connector
+import psycopg2
+# import mysql.connector
 
 import screte_database.screte_db_login as login
 from screte_cryptography.diffie_hellman_keys import diffie_hellman_public_key
@@ -8,14 +9,21 @@ from screte_cryptography.diffie_hellman_keys import diffie_hellman_public_key
 
 class Database:
     def __init__(self):
-        self.conn = mysql.connector.connect(host=login.server, user=login.username,
-                                            password=login.password, database=login.db_name)
+        self.conn = psycopg2.connect(dbname=login.db_name, user=login.username,
+                                     password=login.password, host=login.host, port=login.port)
+        # self.conn = mysql.connector.connect(host=login.server, user=login.username, database=login.db_name, password=login.password)
         self.cursor = self.conn.cursor()
 
     def __del__(self):
         self.conn.commit()
         self.conn.close()
         self.cursor.close()
+
+    # def create_tables(self):
+    #     with open('sql_files/creating_tables.sql', 'r') as file:
+    #         content = file.read()
+    #     self.cursor.execute(content)
+    #     self.conn.commit()
 
     def set_ip_address(self, username, ip_address):
         """
@@ -138,15 +146,15 @@ class Database:
         user_id_1 = self._get_user_id(username1)
         user_id_2 = self._get_user_id(username2)
 
-        self.cursor.execute("SELECT * from contacts WHERE 1_user_id = (%s) and 2_user_id = (%s)", (user_id_1, user_id_2))
+        self.cursor.execute("SELECT * from contacts WHERE user1_id = (%s) and user2_id = (%s)", (user_id_1, user_id_2))
         contacts = self.cursor.fetchall()
-        self.cursor.execute("SELECT * from contacts WHERE 1_user_id = (%s) and 2_user_id = (%s)", (user_id_2, user_id_1))
+        self.cursor.execute("SELECT * from contacts WHERE user1_id = (%s) and user2_id = (%s)", (user_id_2, user_id_1))
         contacts += self.cursor.fetchall()
 
         if contacts:
             return False
 
-        self.cursor.execute("INSERT INTO contacts (1_user_id, 2_user_id) VALUES (%s, %s)", (user_id_1, user_id_2))
+        self.cursor.execute("INSERT INTO contacts (user1_id, user2_id) VALUES (%s, %s)", (user_id_1, user_id_2))
 
         self.conn.commit()
 
@@ -165,9 +173,9 @@ class Database:
             return False
 
         user_id = self._get_user_id(username)
-        self.cursor.execute("SELECT 2_user_id FROM contacts WHERE 1_user_id = (%s)", (user_id,))
+        self.cursor.execute("SELECT user2_id FROM contacts WHERE user1_id = (%s)", (user_id,))
         raw_contacts = self.cursor.fetchall()
-        self.cursor.execute("SELECT 1_user_id FROM contacts WHERE 2_user_id = (%s)", (user_id,))
+        self.cursor.execute("SELECT user1_id FROM contacts WHERE user2_id = (%s)", (user_id,))
         raw_contacts += self.cursor.fetchall()
 
         contacts = [self._get_username(contact[0]) for contact in raw_contacts]
@@ -331,6 +339,7 @@ class Database:
         for from_user in contacts:
             total += len(self.get_all_pictures(from_user, username))
         return total
+
 
 
 

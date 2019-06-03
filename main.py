@@ -97,13 +97,14 @@ def result(from_name, to_name):
             ImageLoaderAndSaver.download_image_from_filesystem(enr_img_id, "./static/")
 
             # decrypt
-            '''
+            # '''
+            img_path = "./static/"+str(enr_img_id)+".jpg"
             enc_img = ImageLoaderAndSaver.load_image_locally(img_path)
             new_the_key = form_secret_key(enc_img, sh_key)
 
             our_img = Image.decrypt_img(enc_img, new_the_key)
             ImageLoaderAndSaver.save_image_locally(our_img, img.filename)
-            '''
+            # '''
             return render_template("result.html", img_name=str(enr_img_id)+".jpg")
         else:
             return render_template("result.html", img_id=None)
