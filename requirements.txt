@@ -1,0 +1,8 @@
+gunicorn
+Flask==1.0.2
+Werkzeug
+numpy
+pyDH
+opencv-python
+psycopg2
+dropbox
