@@ -3,5 +3,5 @@ Werkzeug
 numpy
 pyDH
 opencv-python
-mysql-client
+mysql
 dropbox
