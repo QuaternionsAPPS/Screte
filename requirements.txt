@@ -5,3 +5,4 @@ pyDH
 opencv-python
 psycopg2
 dropbox
+libpq-dev
