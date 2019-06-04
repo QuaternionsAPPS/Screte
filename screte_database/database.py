@@ -1,7 +1,6 @@
 import datetime
 
 import psycopg2
-# import mysql.connector
 
 import screte_database.screte_db_login as login
 from screte_cryptography.diffie_hellman_keys import diffie_hellman_public_key
@@ -11,19 +10,12 @@ class Database:
     def __init__(self):
         self.conn = psycopg2.connect(dbname=login.db_name, user=login.username,
                                      password=login.password, host=login.host, port=login.port)
-        # self.conn = mysql.connector.connect(host=login.server, user=login.username, database=login.db_name, password=login.password)
         self.cursor = self.conn.cursor()
 
     def __del__(self):
         self.conn.commit()
         self.conn.close()
         self.cursor.close()
-
-    # def create_tables(self):
-    #     with open('sql_files/creating_tables.sql', 'r') as file:
-    #         content = file.read()
-    #     self.cursor.execute(content)
-    #     self.conn.commit()
 
     def set_ip_address(self, username, ip_address):
         """
@@ -202,10 +194,10 @@ class Database:
         if len(picture["info_from_user"]) > 255:
             return False
 
-        self.cursor.execute("INSERT INTO pictures (from_user_id, to_user_id, had_been_read, info_from_user) VALUES (%s, %s, %s, %s)",
-                            (self._get_user_id(picture["from_user"]), self._get_user_id(picture["to_user"]), 0, picture["info_from_user"]))
+        self.cursor.execute("INSERT INTO pictures (from_user_id, to_user_id, had_been_read, info_from_user) VALUES (%s, %s, %s, %s) RETURNING id;",
+                            (self._get_user_id(picture["from_user"]), self._get_user_id(picture["to_user"]), False, picture["info_from_user"]))
 
-        picture_id = self.cursor.lastrowid
+        picture_id = self.cursor.fetchone()[0]
 
         self.conn.commit()
 
@@ -220,7 +212,7 @@ class Database:
         picture = self.cursor.fetchone()
         if picture is None:
             return False
-        self.cursor.execute("UPDATE pictures SET had_been_read = 1 WHERE id = (%s)", (id,))
+        self.cursor.execute("UPDATE pictures SET had_been_read = True WHERE id = (%s)", (id,))
         return True
 
     def get_not_read_pictures(self, from_username, to_username):
@@ -239,7 +231,7 @@ class Database:
         from_id = self._get_user_id(from_username)
         to_id = self._get_user_id(to_username)
 
-        self.cursor.execute("SELECT id from pictures WHERE from_user_id = (%s) and to_user_id = (%s) and had_been_read = 0",
+        self.cursor.execute("SELECT id from pictures WHERE from_user_id = (%s) and to_user_id = (%s) and had_been_read = False",
                             (from_id, to_id))
         raw_pictures = self.cursor.fetchall()
 
