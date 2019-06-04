@@ -1,7 +1,6 @@
 import os
 
-from flask import Flask, request, render_template, jsonify
-from werkzeug.utils import secure_filename
+from flask import Flask, request, render_template
 
 from screte_database.database import Database
 from screte_cryptography.image import Image, ImageLoaderAndSaver, form_secret_key
@@ -40,7 +39,7 @@ def contacts(self_name="", new_contact_name=""):
                                                   request.form.get("last_name"),\
                                                   request.form.get("new_pass")
             if rep_password == password:
-                u_info = {"username": user_name, "first_name":f_name, "last_name": l_name, "password": password}
+                u_info = {"username": user_name, "first_name": f_name, "last_name": l_name, "password": password}
                 if db.add_user(u_info):
                     return render_template("contacts.html", contacts=[user_name], self_name=user_name)
             return render_template("main.html", log_msg="", reg_msg="You didn't repeat your password correctly.")
@@ -83,6 +82,7 @@ def result(from_name, to_name):
     if request.method == "POST":
 
         img = request.files["img"]
+        img_description = request.form.get("img_description")
         if img is not None:
 
             # read, encrypt
@@ -92,7 +92,7 @@ def result(from_name, to_name):
             encr_img = Image.encrypt_img(img_data, the_key)
 
             # save encr image to dropbox in .bmp
-            enr_img_id = db.add_picture({"from_user": from_name, "to_user": to_name, "info_from_user": ""})
+            enr_img_id = db.add_picture({"from_user": from_name, "to_user": to_name, "info_from_user": img_description})
             ImageLoaderAndSaver.upload_image_to_filesystem(encr_img, enr_img_id)
             ImageLoaderAndSaver.download_image_from_filesystem(enr_img_id, "./static/")
 

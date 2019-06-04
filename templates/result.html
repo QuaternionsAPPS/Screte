@@ -12,9 +12,10 @@
 
         {% if img_name %}
             <h2> Your image was successfully encrypted. You can see / share: </h2>
-
-        	<img style="width: 50em; height: 50em;" src= {{ url_for('static', filename = img_name) }}> <br>
-            <button style="color: blueviolet;" type="submit" class="center_button"> Decrypt </button>
+        	<img src= {{ url_for('static', filename = img_name) }}> <br>
+            <form action="{{ url_for('result', from_name=from_name, to_name=to_name) }}" method="GET">
+                <button style="color: blueviolet;" type="submit" class="center_button"> Decrypt </button>
+            </form>
 
         {% else %}
             <h2>Something went wrong. Sorry, but your image couldn't be encrypted. Please report your problem and try again later.</h2>

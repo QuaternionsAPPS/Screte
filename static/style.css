@@ -55,3 +55,8 @@
         margin-left: calc((100% - 5em)/2);
         border-radius: 15%;
     }
+
+    img {
+        width: 50em;
+        height: 50em;
+    }

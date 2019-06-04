@@ -81,7 +81,6 @@ class Image:
         decrypted_layer = (layer * reverse_key - 1) % PRIME_NUMBER
         return decrypted_layer
 
-
     @classmethod
     def decrypt_img(cls, img, secret_key):
         b, g, r = cv2.split(img)
@@ -120,4 +119,3 @@ class Image:
 
         brg_img = cv2.merge([new_b, new_g, new_r])
         return brg_img
-
