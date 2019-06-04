@@ -5,7 +5,7 @@ first_name varchar(32) not null,
 last_name varchar(32) not null,
 registration_time varchar(17) not null,
 ip_address varchar(15),
-sh_key varchar(618) not null);
+pri_key varchar(78) not null);
 
 create table pictures (id bigserial primary key,
 from_user_id int not null,

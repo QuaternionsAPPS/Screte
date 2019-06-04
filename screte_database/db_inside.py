@@ -7,7 +7,7 @@ def main(filename):
                                  password=login.password, host=login.host, port=login.port)
     db_cursor = db_conn.cursor()
 
-    content = '## users \n\n id | username | password | first_name | last_name | registration_time | ip_address | sh_key |\n' \
+    content = '## users \n\n id | username | password | first_name | last_name | registration_time | ip_address | pri_key |\n' \
               + ':----: |' * 8 + '\n'
 
     db_cursor.execute("SELECT * FROM users")
