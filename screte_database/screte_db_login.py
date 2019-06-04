@@ -1,5 +1,0 @@
-host = 'balarama.db.elephantsql.com'
-db_name = 'yhoruunm'
-username = 'yhoruunm'
-password = 'MQggJSizkn39lfidDv-W7w72uzPAqZk6'
-port = '5432'
