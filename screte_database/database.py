@@ -3,7 +3,7 @@ import datetime
 import psycopg2
 
 import screte_database.screte_db_login as login
-from screte_cryptography.diffie_hellman_keys import diffie_hellman_public_key
+from screte_cryptography.diffie_hellman_keys import diffie_hellman_private_key
 
 
 class Database:
@@ -11,6 +11,7 @@ class Database:
         self.conn = psycopg2.connect(dbname=login.db_name, user=login.username,
                                      password=login.password, host=login.host, port=login.port)
         self.cursor = self.conn.cursor()
+        self._sql_files_path = 'sql_files/'
 
     def __del__(self):
         self.conn.commit()
@@ -73,10 +74,10 @@ class Database:
 
         today = self._current_time()
 
-        pub_key = diffie_hellman_public_key()
+        pri_key = diffie_hellman_private_key()
 
-        self.cursor.execute("INSERT INTO users (username, first_name, last_name, password, registration_time, sh_key) VALUES (%s, %s, %s, %s, %s, %s)",
-                       (user["username"], user["first_name"], user["last_name"], user["password"], today, str(pub_key)))
+        self.cursor.execute("INSERT INTO users (username, first_name, last_name, password, registration_time, pri_key) VALUES (%s, %s, %s, %s, %s, %s)",
+                       (user["username"], user["first_name"], user["last_name"], user["password"], today, str(pri_key)))
 
         self.conn.commit()
 
@@ -116,14 +117,14 @@ class Database:
         :param username: varchar(32)
         :return: {"first_name": varchar(32),
                   "last_name": varchar(32),
-                  "sh_key": int}
+                  "pri_key": int}
                   False - otherwise.
         """
-        self.cursor.execute("SELECT first_name, last_name, sh_key FROM users WHERE username = (%s)", (username,))
+        self.cursor.execute("SELECT first_name, last_name, pri_key FROM users WHERE username = (%s)", (username,))
         user_info = self.cursor.fetchone()
 
         if user_info is not None:
-            return {"first_name": user_info[0], "last_name": user_info[1], "sh_key": int(user_info[2])}
+            return {"first_name": user_info[0], "last_name": user_info[1], "pri_key": int(user_info[2])}
 
     def add_contact(self, username1, username2):
         """
@@ -286,6 +287,18 @@ class Database:
     #
     #   Private functions
     #
+
+    def _create_tables(self):
+        with open('{}creating_tables.sql'.format(self._sql_files_path), 'r') as file:
+            content = file.read()
+            self.cursor.execute(content)
+            self.conn.commit()
+
+    def _drop_tables(self):
+        with open('{}dropping_tables.sql'.format(self._sql_files_path), 'r') as file:
+            content = file.read()
+            self.cursor.execute(content)
+            self.conn.commit()
 
     @staticmethod
     def _current_time():
