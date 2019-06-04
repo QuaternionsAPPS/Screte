@@ -13,7 +13,7 @@
         {% if img_name %}
             <h2> Your image was successfully encrypted. You can see / share: </h2>
         	<img src= {{ url_for('static', filename = img_name) }}> <br>
-            <form action="{{ url_for('result', from_name=from_name, to_name=to_name) }}" method="GET">
+            <form action="{{ url_for('result', from_name=from_name, to_name=to_name, count=1) }}" method="GET">
                 <button style="color: blueviolet;" type="submit" class="center_button"> Decrypt </button>
             </form>
 

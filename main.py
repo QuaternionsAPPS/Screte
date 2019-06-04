@@ -74,8 +74,8 @@ def send(from_name, to_name):
 @app.route('/result/<string:from_name>/<string:to_name>', methods=["GET", "POST"])
 def result(from_name, to_name):
 
-    fk = db.get_user_info_for_encryption(from_name)["sh_key"]
-    tk = db.get_user_info_for_encryption(to_name)["sh_key"]
+    fk = db.get_user_info_for_encryption(from_name)["pri_key"]
+    tk = db.get_user_info_for_encryption(to_name)["pri_key"]
     sh_key = diffie_hellman_shared_key(fk, tk)
 
     # send image
@@ -104,17 +104,7 @@ def result(from_name, to_name):
             img_file_name = str(enr_img_id) + ".jpg"
             img_path = os.path.join(app.static_folder, img_file_name)
             ImageLoaderAndSaver.save_image_locally(encr_img, img_path)
-
-            # decrypt
-            '''
-            img_path = "./static/"+str(enr_img_id)+".jpg"
-            enc_img = ImageLoaderAndSaver.load_image_locally(img_path)
-            new_the_key = form_secret_key(enc_img, sh_key)
-
-            our_img = Image.decrypt_img(enc_img, new_the_key)
-            ImageLoaderAndSaver.save_image_locally(our_img, img.filename)
-            '''
-            return render_template("result.html", img_name=str(enr_img_id)+".jpg")
+            return render_template("result.html", img_name=str(enr_img_id)+".jpg", from_name=from_name, to_name=to_name)
         else:
             return render_template("result.html", img_id=None)
 
@@ -128,8 +118,8 @@ def result(from_name, to_name):
 
             new_the_key = form_secret_key(enc_img, sh_key)                                         # form key
             our_img = Image.decrypt_img(enc_img, new_the_key)
-            ImageLoaderAndSaver.save_image_locally(our_img, "./static/" + str(img_id) + ".jpg")    # save image
-
+            ImageLoaderAndSaver.save_image_locally(our_img, "./static/" + '_' + str(img_id) + ".jpg")    # save image
+            db.mark_picture_as_read(img_id)
         return render_template("result_receive.html", img_names=list(map(str, img_id_list)))
 
 

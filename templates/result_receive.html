@@ -13,7 +13,8 @@
         <h2> Decrypted: </h2>
 
         {% for img_name in img_names %}
-            <img src= {{ url_for('static', filename = img_name + '.jpg') }} >
+            {{ img_name }} .jpg
+            <img src= {{ url_for('static', filename = '_' + img_name + '.jpg') }} >
         {% endfor %}
 
     </div>
