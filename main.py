@@ -29,8 +29,7 @@ def start():
 
 @app.route('/contacts', methods=["GET", "POST"])
 def contacts(self_name="", new_contact_name=""):
-    print(request.args)
-    print(self_name, new_contact_name)
+
     if request.method == "POST":
 
         # new user
@@ -56,18 +55,15 @@ def contacts(self_name="", new_contact_name=""):
             return render_template("main.html", reg_msg="", log_msg="Wrong username or password. Try again.")
 
     elif request.method == "GET":
-        print("ggg")
         try:
-            self_name = request.args["from_name"]
+            self_name = request.args["self_name"]
             new_contact_name = request.args["new_contact_name"]
         except KeyError:
             return render_template("main.html", reg_msg="", log_msg="")
         else:
-            print("g")
             if self_name:
                 if new_contact_name:
                     db.add_contact(self_name, new_contact_name)
-                print(db.get_contacts(self_name))
                 return render_template("contacts.html", contacts=db.get_contacts(self_name), self_name=self_name)
 
         return render_template("main.html", reg_msg="", log_msg="")
@@ -83,10 +79,8 @@ def result(from_name, to_name):
 
     # send image
     if request.method == "POST":
-        print("post")
 
         img = request.files["img"]
-        print(img)
         if img is not None:
 
             # read, encrypt
@@ -134,13 +128,12 @@ def result(from_name, to_name):
 def add_contact(self_name):
     if request.method == "POST":
         new_contact_name = request.form.get("new_contact_name")
-        print(new_contact_name)
         if db.get_general_user_info(new_contact_name):
-            return render_template("profile.html", profile_name=new_contact_name, from_name=self_name)
+            return render_template("profile.html", profile_name=new_contact_name, self_name=self_name)
     return render_template("contacts.html", contacts=db.get_contacts(self_name), self_name=self_name)
 
 
 if __name__ == '__main__':
-    # app.run()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run()
+    # app.run(host='0.0.0.0', port=5000, debug=True)
     # app.run(host='0.0.0.0', port=8080, debug=True)
