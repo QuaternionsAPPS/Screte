@@ -22,11 +22,6 @@ def start_app():
 app = start_app()
 
 
-@app.route("/get_my_ip", methods=["GET"])
-def get_my_ip():
-    return jsonify({'ip': request.remote_addr}), 200
-
-
 @app.route('/', methods=["GET", "POST"])
 def start():
     return render_template("main.html")
