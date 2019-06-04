@@ -139,6 +139,6 @@ def add_contact(self_name):
 
 
 if __name__ == '__main__':
-    # app.run()
-    app.run(host='localhost', port=5000, debug=True)
+    app.run()
+    # app.run(host='localhost', port=5000, debug=True)
     # app.run(host='0.0.0.0', port=8080, debug=True)
