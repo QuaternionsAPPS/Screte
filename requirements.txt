@@ -1,5 +1,5 @@
 gunicorn
-Flask==1.0.2
+Flask
 Werkzeug
 numpy
 pyDH
