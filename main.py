@@ -81,8 +81,12 @@ def result(from_name, to_name):
     # send image
     if request.method == "POST":
 
-        img = request.files["img"]
-        img_description = request.form.get("img_description")
+        try:
+            img = request.files["img"]
+            img_description = request.form.get("img_description")
+        except KeyError:
+            return render_template("result.html", img_id=None)
+
         if img is not None:
 
             # read, encrypt
