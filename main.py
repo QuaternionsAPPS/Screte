@@ -48,8 +48,6 @@ def contacts(self_name="", new_contact_name=""):
         # log in
         else:
             user_name, password = request.form.get("name"), request.form.get("password")
-            print(user_name, password)
-
             if db.check_password(user_name, password):
                 return render_template("contacts.html", contacts=db.get_contacts(user_name), self_name=user_name)
             return render_template("main.html", reg_msg="", log_msg="Wrong username or password. Try again.")
@@ -77,6 +75,10 @@ def send(from_name, to_name):
 @app.route('/result/<string:from_name>/<string:to_name>', methods=["GET", "POST"])
 def result(from_name, to_name):
 
+    fk = db.get_user_info_for_encryption(from_name)["sh_key"]
+    tk = db.get_user_info_for_encryption(to_name)["sh_key"]
+    sh_key = diffie_hellman_shared_key(fk, tk)
+
     # send image
     if request.method == "POST":
 
@@ -86,30 +88,28 @@ def result(from_name, to_name):
             # read, encrypt
             img_data = ImageLoaderAndSaver.load_uploaded_image(img)
 
-            fk = db.get_user_info_for_encryption(from_name)["sh_key"]
-            tk = db.get_user_info_for_encryption(to_name)["sh_key"]
-
-            sh_key = diffie_hellman_shared_key(fk, tk)
             the_key = form_secret_key(img_data, sh_key)
             encr_img = Image.encrypt_img(img_data, the_key)
 
-            # img_file_name = secure_filename(img.filename)[:img.filename.rfind(".")] + ".bmp"
-            # img_path = os.path.join(app.instance_path, img_file_name)
-
-            # save image
+            # save encr image to dropbox in .bmp
             enr_img_id = db.add_picture({"from_user": from_name, "to_user": to_name, "info_from_user": ""})
             ImageLoaderAndSaver.upload_image_to_filesystem(encr_img, enr_img_id)
             ImageLoaderAndSaver.download_image_from_filesystem(enr_img_id, "./static/")
 
+            # save encr image to 'static' directory of app in .jpg
+            img_file_name = str(enr_img_id) + ".jpg"
+            img_path = os.path.join(app.static_folder, img_file_name)
+            ImageLoaderAndSaver.save_image_locally(encr_img, img_path)
+
             # decrypt
-            # '''
+            '''
             img_path = "./static/"+str(enr_img_id)+".jpg"
             enc_img = ImageLoaderAndSaver.load_image_locally(img_path)
             new_the_key = form_secret_key(enc_img, sh_key)
 
             our_img = Image.decrypt_img(enc_img, new_the_key)
             ImageLoaderAndSaver.save_image_locally(our_img, img.filename)
-            # '''
+            '''
             return render_template("result.html", img_name=str(enr_img_id)+".jpg")
         else:
             return render_template("result.html", img_id=None)
@@ -117,11 +117,16 @@ def result(from_name, to_name):
     # read image
     elif request.method == "GET":
         img_id_list = db.get_not_read_pictures(from_name, to_name)
-        img_names = []
+
         for img_id in img_id_list:
-            ImageLoaderAndSaver.download_image_from_filesystem(img_id, 'static')
-            img_names.append(str(img_id)+".jpg")
-        return render_template("result_recieve.html", img_names=img_names)
+            ImageLoaderAndSaver.download_image_from_filesystem(img_id, "./static/")                # download image
+            enc_img = ImageLoaderAndSaver.load_image_locally("./static/" + str(img_id) + ".bmp")   # load
+            new_the_key = form_secret_key(enc_img, sh_key)                                         # form key
+
+            our_img = Image.decrypt_img(enc_img, new_the_key)
+            ImageLoaderAndSaver.save_image_locally(our_img, "./static/" + str(img_id) + ".jpg")    # save image
+
+        return render_template("result_receive.html", img_names=img_id_list)
 
 
 @app.route('/add_contact/<string:self_name>', methods=["GET", "POST"])
@@ -134,6 +139,6 @@ def add_contact(self_name):
 
 
 if __name__ == '__main__':
-    app.run()
-    # app.run(host='0.0.0.0', port=5000, debug=True)
+    # app.run()
+    app.run(host='0.0.0.0', port=5000, debug=True)
     # app.run(host='0.0.0.0', port=8080, debug=True)

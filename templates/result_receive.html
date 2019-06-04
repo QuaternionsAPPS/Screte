@@ -10,13 +10,10 @@
 <body>
     <div class="center_log">
 
-        {% for img_name in img_names %}
-            <h2> Your image was successfully encrypted. You can see / share it with following link: </h2>
+        <h2> Decrypted: </h2>
 
-        	<img src= {{ url_for('static', filename = img_name) }}>
-            <br>
-            <button type="submit" class="center_button"> Decrypt </button>
-            <br>
+        {% for img_name in img_names %}
+            <img src= {{ url_for( img_name + '.jpg' ) }}>
         {% endfor %}
 
     </div>
