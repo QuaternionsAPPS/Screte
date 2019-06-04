@@ -14,6 +14,7 @@
             <form action="{{ url_for('result', from_name=from_name, to_name=to_name) }}" method="POST" enctype="multipart/form-data">
                 <p>
                     <input type="file" name="img" accept="image/jpeg,image/png,image/gif">
+                    <input type="text" name="img_description">
                     <input type="submit" value="Send">
                 </p>
             </form>
