@@ -121,12 +121,12 @@ def result(from_name, to_name):
         for img_id in img_id_list:
             ImageLoaderAndSaver.download_image_from_filesystem(img_id, "./static/")                # download image
             enc_img = ImageLoaderAndSaver.load_image_locally("./static/" + str(img_id) + ".bmp")   # load
-            new_the_key = form_secret_key(enc_img, sh_key)                                         # form key
 
+            new_the_key = form_secret_key(enc_img, sh_key)                                         # form key
             our_img = Image.decrypt_img(enc_img, new_the_key)
             ImageLoaderAndSaver.save_image_locally(our_img, "./static/" + str(img_id) + ".jpg")    # save image
 
-        return render_template("result_receive.html", img_names=img_id_list)
+        return render_template("result_receive.html", img_names=list(map(str, img_id_list)))
 
 
 @app.route('/add_contact/<string:self_name>', methods=["GET", "POST"])
@@ -140,5 +140,5 @@ def add_contact(self_name):
 
 if __name__ == '__main__':
     app.run()
-    # app.run(host='0.0.0.0', port=5000, debug=True)
+    # app.run(host='localhost', port=5000, debug=True)
     # app.run(host='0.0.0.0', port=8080, debug=True)
