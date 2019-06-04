@@ -21,6 +21,14 @@
         font-size: 1.25em;
     }
 
+    .center_log_contact_action {
+        margin: 0.25em;
+        background-color: purple;
+        color: honeydew;
+        width: 15%;
+        display: inline-block;
+    }
+
     .center_log > h3 {
         color: greenyellow;
     }

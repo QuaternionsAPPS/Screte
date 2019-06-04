@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Screte</title>
+</head>
+
+<body>
+    <div class="center_log">
+        <img width="50em" height="50em" src="http://fundacionseraphim.org/wp-content/uploads/2017/09/Contacts-icon.png">
+        <br>
+        {{ profile_name }}
+        <br>
+
+        <a href="{{ url_for('contacts', self_name=self_name, new_contact_name=profile_name) }}">
+            <div class="center_log_contact_action" style="background-color: honeydew; color: purple;">add</div> </a>
+        <a href="{{ url_for('contacts', self_name=self_name, new_contact_name="") }}">
+            <div class="center_log_contact_action" style="background-color: honeydew; color: purple;">not</div> </a>
+    </div>
+</body>
+</html>

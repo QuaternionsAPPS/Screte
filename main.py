@@ -28,7 +28,9 @@ def start():
 
 
 @app.route('/contacts', methods=["GET", "POST"])
-def contacts():
+def contacts(self_name="", new_contact_name=""):
+    print(request.args)
+    print(self_name, new_contact_name)
     if request.method == "POST":
 
         # new user
@@ -54,6 +56,20 @@ def contacts():
             return render_template("main.html", reg_msg="", log_msg="Wrong username or password. Try again.")
 
     elif request.method == "GET":
+        print("ggg")
+        try:
+            self_name = request.args["from_name"]
+            new_contact_name = request.args["new_contact_name"]
+        except KeyError:
+            return render_template("main.html", reg_msg="", log_msg="")
+        else:
+            print("g")
+            if self_name:
+                if new_contact_name:
+                    db.add_contact(self_name, new_contact_name)
+                print(db.get_contacts(self_name))
+                return render_template("contacts.html", contacts=db.get_contacts(self_name), self_name=self_name)
+
         return render_template("main.html", reg_msg="", log_msg="")
 
 
@@ -114,8 +130,17 @@ def result(from_name, to_name):
         return render_template("result_recieve.html", img_names=img_names)
 
 
+@app.route('/add_contact/<string:self_name>', methods=["GET", "POST"])
+def add_contact(self_name):
+    if request.method == "POST":
+        new_contact_name = request.form.get("new_contact_name")
+        print(new_contact_name)
+        if db.get_general_user_info(new_contact_name):
+            return render_template("profile.html", profile_name=new_contact_name, from_name=self_name)
+    return render_template("contacts.html", contacts=db.get_contacts(self_name), self_name=self_name)
+
+
 if __name__ == '__main__':
-    app.run()
-    # port = int(os.environ.get('PORT', 5000))
-    # app.run(host='0.0.0.0', port=port)
+    # app.run()
+    app.run(host='0.0.0.0', port=5000, debug=True)
     # app.run(host='0.0.0.0', port=8080, debug=True)

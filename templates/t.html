@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/style.css"></link>
+    <title>Screte</title>
+</head>
+
+<body>
+    <div class="center_log">
+        <ul style="list-style-type:none">
+
+                <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
+                    <div class="inner_center_log">
+                        <li>name_1</li>
+                    </div>
+                </a>
+
+                    <div class="inner_center_log">
+                        <li>name_1</li>
+                        <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
+                            <div class="center_log_contact_action">send</div>
+                        </a>
+
+                        <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
+                            <div class="center_log_contact_action">read</div>
+                        </a>
+                    </div>
+
+                <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
+                    <div class="inner_center_log">
+                        <li>name_1</li>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('new_contact', from_name=self_name) }}">
+                    <div class="inner_center_log" style="margin-top: 1.5em;">
+                        <li>... add new contact ...</li>
+                        <form action="{{ url_for('contacts') }}" method="POST">   {# Log In #}
+                            <input name="password"  type="password"  placeholder="password"  aria-label="password" />
+                            <button type="submit" class="center_button"> Log In </button>
+                        </form>
+                    </div>
+                </a>
+
+        </ul>
+    </div>
+</body>
+
+</html>

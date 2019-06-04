@@ -4,20 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"></link>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <title>Screte</title>
 </head>
 
 <body>
     <div class="center_log">
         <ul style="list-style-type:none">
+
             {%for c in contacts%}
-                <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
-                    <div class="inner_center_log">
-                        <li>{{ c }}</li>
-                    </div>
-                </a>
+                <div class="inner_center_log">
+                    <li>{{ c }}</li>
+                    <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
+                        <div class="center_log_contact_action">send</div>
+                            </a>
+                    <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
+                        <div class="center_log_contact_action">read</div>
+                            </a>
+                </div>
             {%endfor%}
+
+            <div class="inner_center_log" style="margin-top: 1.5em;">
+                <li>... add new contact ...</li>
+                <form action="{{ url_for('add_contact', self_name=self_name) }}" method="POST">
+                    <input name="new_contact_name"  type="text"  placeholder="contact user-name"  aria-label="new_contact_name" />
+                    <button type="submit" class="center_button"> Search </button>
+                </form>
+            </div>
+
         </ul>
     </div>
 </body>
