@@ -23,9 +23,9 @@
 
             <nav class="menu-header__menu-nav">
                 <ul>
-                    <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
-                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
-                    <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
+                    <li aria-label="Home">     <a methods="GET" href="{{ url_for('start') }}"> Home </a> </li>
+                    <li aria-label="Contacts"> <a methods="GET" href="{{ url_for('contacts', self_name=from_name) }}"> Contacts </a> </li>
+                    <li aria-label="Gallery">  <a methods="GET" href=""> Gallery </a> </li>
                 </ul>
             </nav>
         </div>
@@ -40,7 +40,7 @@
                     <figcaption>Encrypted '{{ img_name }}"</figcaption>
                 </figure>
                 <br>
-                <a href="{{ url_for('result', from_name=from_name, to_name=to_name) }}" methods="GET">
+                <a href="{{ url_for('result', from_name=from_name, to_name=to_name, read_only=read_only) }}" methods="GET">
                     <button type="submit" class="center_log"> Decrypt </button>
                 </a>
             {% else %}

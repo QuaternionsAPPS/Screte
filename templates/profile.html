@@ -26,7 +26,7 @@
             <nav class="menu-header__menu-nav">
                 <ul>
                     <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
-                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
+                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', self_name=self_name) }}"> Contacts </a> </li>
                     <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
                 </ul>
             </nav>
@@ -42,8 +42,8 @@
             <br/>
             <h2 style="margin: 1%"> {{ profile_name }} </h2>
             <div class="center-log__contacts__actions">
-                <a href="{{ url_for('contacts', self_name=self_name, new_contact_name=profile_name) }}"> <button>add</button> </a>
-                <a href="{{ url_for('contacts', self_name=self_name, new_contact_name='') }}"> <button>not</button> </a>
+                <a href="{{ url_for('contacts', self_name=self_name, new_contact_name=profile_name) }}">  <button>add</button> </a>
+                <a href="{{ url_for('contacts', self_name=self_name, new_contact_name='') }}">            <button>not</button> </a>
             </div>
         </div>
     </main>

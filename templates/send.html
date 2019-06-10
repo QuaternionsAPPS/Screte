@@ -16,7 +16,10 @@
         <title>Screte</title>
     </head>
 
+    <script src="{{ url_for('static' , filename='center-log__send-form.js')}}"></script>
+
     <body>
+    {{ from_name }}
         <header class="menu-header">
             <div>
                 <img class="menu-header__logo"
@@ -26,7 +29,7 @@
                 <nav class="menu-header__menu-nav">
                     <ul>
                         <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
-                        <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
+                        <li aria-label="Contacts"> <a href="{{ url_for('contacts', self_name=from_name) }}" methods="GET"> Contacts </a> </li>
                         <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
                     </ul>
                 </nav>
@@ -37,7 +40,7 @@
             <div class="center-log">
                 <h2> Send image to <strong class="center-log__send_name">{{ to_name }}</strong>: </h2>
 
-                <form action="{{ url_for('result', from_name=from_name, to_name=to_name) }}"
+                <form action="{{ url_for('result', from_name=from_name, to_name=to_name, read_only='yes') }}"
                       method="POST"
                       enctype="multipart/form-data"
                       class="center-log__send-form">
@@ -53,8 +56,13 @@
                            name="img_description"
                            placeholder="description message"
                            autocomplete="off"
-                           style="width: 80%">
+                           style="width: 80%"
+                           onkeydown="limit_len(this);"
+                           onkeyup="limit_len(this);"
+                           onsubmit="limit_len(this);">
+
                     <input type="submit" value="Send">
+
                 </form>
 
             </div>

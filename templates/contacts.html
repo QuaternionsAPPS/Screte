@@ -20,6 +20,7 @@
 </head>
 
 <body>
+    {{ self_name }}
     <header class="menu-header">
         <div>
             <img class="menu-header__logo"
@@ -28,9 +29,9 @@
 
             <nav class="menu-header__menu-nav">
                 <ul>
-                    <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
-                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
-                    <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
+                    <li aria-label="Home">      <a methods="GET" href="{{ url_for('start') }}"> Home  </a> </li>
+                    <li aria-label="Contacts">  <a methods="GET" href="{{ url_for('contacts', self_name=self_name) }}"> Contacts </a> </li>
+                    <li aria-label="Gallery">   <a methods="GET" href=""> Gallery </a> </li>
                 </ul>
             </nav>
         </div>
@@ -43,8 +44,8 @@
                     <li class="center-log__contact">
                         <h3> {{ c }} </h3>
                         <div class="center-log__contacts__actions">
-                            <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">   <button> send </button> </a>
-                            <a href="{{ url_for('result', from_name=c, to_name=self_name) }}"> <button> read </button> </a>
+                            <a href="{{ url_for('send', from_name=self_name, to_name=c) }}" methods="GET">   <button> send </button> </a>
+                            <a href="{{ url_for('result', from_name=c, to_name=self_name, read_only="yes") }}" methods="GET"> <button> read </button> </a>
                         </div>
                     </li>
                 {% endfor %}
