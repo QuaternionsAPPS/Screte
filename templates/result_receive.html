@@ -3,20 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/jpg" href="{{ url_for('static', filename='Screte_logo.jpg') }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='body.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header__logo.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header__menu-nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='center-log.css') }}">
+
     <title>Screte</title>
 </head>
 
 <body>
-    <div class="center_log">
+    <header class="menu-header">
+        <div>
+            <img class="menu-header__logo"
+                 alt="logo of Screte (just stylized S letter)"
+                 src= {{ url_for('static', filename = "Screte_logo.jpg") }} >
+            <nav class="menu-header__menu-nav">
+                <ul>
+                    <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
+                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
+                    <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <h2> Decrypted: </h2>
+    <main>
+        <div class="center-log">
+            {% if img_names %}
+                <h2> Decrypted: </h2>
+                {% for img_name in img_names %}
+                    <figure>
+                        <img src="{{ url_for('static', filename = '_' + img_name + '.jpg') }}" alt="decoded image">
+                        <figcaption> Decrypted {{ img_name }}</figcaption>
+                    </figure>
+                {% endfor %}
+            {% else %}
+                <h2> Nothing to decrypt.</h2>
 
-        {% for img_name in img_names %}
-            <img src= {{ url_for('static', filename = '_' + img_name + '.jpg') }} >
-        {% endfor %}
-
-    </div>
+            {% endif %}
+        </div>
+    </main>
 
 </body>
 </html>

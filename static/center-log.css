@@ -1,0 +1,46 @@
+
+.center-log{
+    display: block;
+    text-align: center;
+    opacity: 1;
+    margin: 3% 10%;
+    background-color: #1E2446;
+    color: #dff9fb;
+    padding: 0.5rem;
+}
+
+.center-log input {
+    text-align: center;
+    font-family: "Fira Sans", serif;
+    height: 2rem;
+    width: 30%;
+    margin: 0.5rem;
+    border: 2px solid #1E2446
+}
+
+.center-log h1{
+    color: #dff9fb;
+    background-color: transparent;
+    margin: 2rem;
+    height: auto;
+}
+
+.center-log button {
+    margin: 0.5rem calc((100% - 5rem) / 2) 1rem;
+    padding: 1vh;
+    border: solid 2px #1E2446;
+}
+
+.center-log button:hover{
+    background-color: #BCBDBF;
+}
+
+.center-log figure img{
+    width: 70%;
+    height: auto;
+    margin: 2rem;
+}
+
+#sign_up.center-log  {
+    opacity: 0.15;
+}

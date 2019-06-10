@@ -4,36 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/jpg" href="{{ url_for('static', filename='Screte_logo.jpg') }}">
+
+    <link rel="stylesheet" type="text/css" href="static/styles/body.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/menu-header.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/menu-header__logo.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/menu-header__menu-nav.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/center-log.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/center-log__input.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dot.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/center-log__contacts.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/center-log__contact.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/center-log__contacts__actions.css">
+
     <title>Screte</title>
 </head>
 
 <body>
-    <div class="center_log">
-        <ul style="list-style-type:none">
+    <header class="menu-header">
+        <div>
+            <img class="menu-header__logo"
+                 alt="logo of Screte (just stylized S letter)"
+                 src= {{ url_for('static', filename = "Screte_logo.jpg") }} >
 
-            {%for c in contacts%}
-                <div class="inner_center_log">
-                    <li>{{ c }}</li>
-                    <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">
-                        <div class="center_log_contact_action">send</div>
-                            </a>
-                    <a href="{{ url_for('result', from_name=c, to_name=self_name) }}">
-                        <div class="center_log_contact_action">read</div>
-                            </a>
-                </div>
-            {%endfor%}
+            <nav class="menu-header__menu-nav">
+                <ul>
+                    <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
+                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
+                    <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-            <div class="inner_center_log" style="margin-top: 1.5em;">
-                <li>... add new contact ...</li>
-                <form action="{{ url_for('add_contact', self_name=self_name) }}" method="POST">
-                    <input name="new_contact_name"  type="text"  placeholder="contact user-name"  aria-label="new_contact_name" />
-                    <button type="submit" class="center_button"> Search </button>
-                </form>
-            </div>
+    <main>
+        <div class="center-log">
+            <ul class="center-log__contacts">
+                {% for c in contacts %}
+                    <li class="center-log__contact">
+                        <h3> {{ c }} </h3>
+                        <div class="center-log__contacts__actions">
+                            <a href="{{ url_for('send', from_name=self_name, to_name=c) }}">   <button> send </button> </a>
+                            <a href="{{ url_for('result', from_name=c, to_name=self_name) }}"> <button> read </button> </a>
+                        </div>
+                    </li>
+                {% endfor %}
 
-        </ul>
-    </div>
+                <li style="margin-top: 1.5em;">
+                    <h3> ... add new contact ... </h3>
+                    <form action="{{ url_for('add_contact', self_name=self_name) }}"
+                          method="POST"
+                          class="center-log__contacts__search">
+                            <input name="new_contact_name"  type="text"  placeholder="contact user-name"  aria-label="new_contact_name" />
+                            <button type="submit" > Search </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </main>
 </body>
 
 </html>

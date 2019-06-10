@@ -54,16 +54,14 @@ def contacts(self_name="", new_contact_name=""):
     elif request.method == "GET":
         try:
             self_name = request.args["self_name"]
-            new_contact_name = request.args["new_contact_name"]
         except KeyError:
             return render_template("main.html", reg_msg="", log_msg="")
         else:
             if self_name:
+                new_contact_name = request.args["new_contact_name"]
                 if new_contact_name:
                     db.add_contact(self_name, new_contact_name)
-                return render_template("contacts.html", contacts=db.get_contacts(self_name), self_name=self_name)
-
-        return render_template("main.html", reg_msg="", log_msg="")
+            return render_template("contacts.html", contacts=db.get_contacts(self_name), self_name=self_name)
 
 
 @app.route('/send/<string:from_name>/<string:to_name>', methods=["GET", "POST"])
@@ -113,6 +111,8 @@ def result(from_name, to_name):
         img_id_list = db.get_not_read_pictures(from_name, to_name)
 
         for img_id in img_id_list:
+            print()
+            ImageLoaderAndSaver.download_image_from_filesystem(img_id, "./static/")                # download image
             ImageLoaderAndSaver.download_image_from_filesystem(img_id, "./static/")                # download image
             enc_img = ImageLoaderAndSaver.load_image_locally("./static/" + str(img_id) + ".bmp")   # load
 

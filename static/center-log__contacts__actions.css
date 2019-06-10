@@ -1,0 +1,18 @@
+.center-log__contacts__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-log__contacts__actions a button {
+    margin: 0 0 1rem;
+}
+
+.center-log__contacts__actions a button:hover {
+    background-color: #BCBDBF;
+    color: #1E2446;
+}
+
+.center-log__contacts h3{
+    margin: 0.75rem 1rem 0.25rem;
+}

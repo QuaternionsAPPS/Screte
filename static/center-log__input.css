@@ -1,0 +1,7 @@
+.center_log input {
+    text-align: center;
+    font-family: "Fira Sans", serif;
+    height: 3vh;
+    width: 25%;
+    padding: 0.5vh;
+}

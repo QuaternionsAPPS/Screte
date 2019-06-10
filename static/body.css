@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body * {
+    border: solid 2px transparent;
+    border-radius: 15px;
+    text-decoration: none;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+body *:focus {
+    outline: transparent;
+}

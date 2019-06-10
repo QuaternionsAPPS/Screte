@@ -1,0 +1,32 @@
+.menu-header__menu-nav {
+    display: block;
+    float: right;
+    margin-left: 1rem;
+    list-style: none;
+}
+
+.menu-header__menu-nav a{
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.menu-header__menu-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.menu-header__menu-nav li {
+    display: inline-block;
+    margin: 1rem 0 1rem 1rem;
+    padding: 0.5rem;
+    color: #1E2446;
+    position: relative;
+    border: solid 2px #1E2446;
+}
+
+.menu-header__menu-nav li:hover{
+    background-color: #BCBDBF;
+}

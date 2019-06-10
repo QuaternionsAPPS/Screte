@@ -4,21 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='body.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header__logo.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header__menu-nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='center-log.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='center-log__contact__icon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='center-log__contacts__actions.css') }}">
+
     <title>Screte</title>
 </head>
 
 <body>
-    <div class="center_log">
-        <img width="50em" height="50em" src="http://fundacionseraphim.org/wp-content/uploads/2017/09/Contacts-icon.png">
-        <br>
-        {{ profile_name }}
-        <br>
+    <header class="menu-header">
+        <div>
+            <img class="menu-header__logo"
+                 alt="logo of Screte (just stylized S letter)"
+                 src= "{{ url_for('static', filename = 'Screte_logo.jpg') }}">
 
-        <a href="{{ url_for('contacts', self_name=self_name, new_contact_name=profile_name) }}">
-            <div class="center_log_contact_action" style="background-color: honeydew; color: purple;">add</div> </a>
-        <a href="{{ url_for('contacts', self_name=self_name, new_contact_name="") }}">
-            <div class="center_log_contact_action" style="background-color: honeydew; color: purple;">not</div> </a>
+            <nav class="menu-header__menu-nav">
+                <ul>
+                    <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
+                    <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
+                    <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="center-log">
+            <img src="http://fundacionseraphim.org/wp-content/uploads/2017/09/Contacts-icon.png"
+                 alt="contact icon"
+                 aria-label="contact icon"
+                 class="center-log__contact__icon">
+            <br/>
+            <h2 style="margin: 1%"> {{ profile_name }} </h2>
+            <div class="center-log__contacts__actions">
+                <a href="{{ url_for('contacts', self_name=self_name, new_contact_name=profile_name) }}"> <button>add</button> </a>
+                <a href="{{ url_for('contacts', self_name=self_name, new_contact_name='') }}"> <button>not</button> </a>
+            </div>
+        </div>
+    </main>
+
+
+    <div class="center_log">
+
+
+
     </div>
 </body>
 </html>

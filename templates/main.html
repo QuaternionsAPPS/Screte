@@ -4,38 +4,71 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+        <link rel="icon" type="image/jpg" href="{{ url_for('static', filename='Screte_logo.jpg') }}">
 
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='body.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header__logo.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='menu-header__menu-nav.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='center-log.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='center-log__input.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dot.css') }}">
 
         <title>Screte</title>
     </head>
 
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.js"></script>
+    <script src="{{ url_for('static' , filename='center-log.js')}}"></script>
 
     <body>
+        <header class="menu-header">
+            <div>
+                <img class="menu-header__logo"
+                     alt="logo of Screte (stylized S letter)"
+                     aria-label="logo of Screte (stylized S letter)"
+                     src= "{{ url_for('static', filename = 'Screte_logo.jpg') }}">
 
-        <div class="center_log" id="1">
-            <h1> Log in: </h1>
-            <form action="{{ url_for('contacts') }}" method="POST">   {# Log In #}
-                <input name="name"      type="text"      placeholder="user name" aria-label="user name"/>
-                <input name="password"  type="password"  placeholder="password"  aria-label="password" />
-                <button type="submit" class="center_button"> Log In </button>
-            </form>
-        </div>
+                <nav class="menu-header__menu-nav">
+                    <ul>
+                        <li aria-label="Home"> <a href="{{ url_for('start') }}"> Home  </a> </li>
+                        <li aria-label="Contacts"> <a href="{{ url_for('contacts', from_name=self_name) }}"> Contacts </a> </li>
+                        <li aria-label="Gallery"> <a href=""> Gallery </a> </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
 
+        <main>
+            <!--   Log In   -->
+            <div class="center-log" id="log_in">
+                <h1 aria-label="Log In"> - Log in  -</h1>
+                <form action="{{ url_for('contacts') }}" method="POST">
+                    <input name="name"      type="text"      placeholder="user name" aria-label="user name"  autocomplete="off"/>
+                    <input name="password"  type="password"  placeholder="password"  aria-label="password" />
+                    <button type="submit" aria-label="Log In"> Log In </button>
+                </form>
+            </div>
 
-        <div class="center_log" id="2">
-            <h1> <span style="font-size: 0.8em"> or </span> <br> Create an account: </h1>
+            <span class="dot" id="dot_log_switch"
+                  onclick="switch_log()"
+                  aria-label="clickable dot to switch between login and registration">
+            </span>
 
-            <form action="{{ url_for('contacts') }}" method="POST">   {# Sign Up #}
-                <input name="new_name"     placeholder="user-name"       type="text"      aria-label="user name"/>
-                <input name="first_name"   placeholder="first name"      type="text"      aria-label="first name"/>
-                <input name="last_name"    placeholder="last name"       type="text"      aria-label="last name"/>
-                <input name="new_pass"     placeholder="password"        type="password"  aria-label="password"/>
-                <input name="new_pass_rep" placeholder="repeat password" type="password"  aria-label="repeat password"/>
-                <button type="submit" class="center_button"> Sign Up </button>
-            </form>
-        </div>
-
+            <!--   Sign Up   -->
+            <div class="center-log" id="sign_up">
+                <h1 aria-label="Create your account: "> >  Create your account: </h1>
+                <form action="{{ url_for('contacts') }}" method="POST">
+                    <input name="new_name"     placeholder="user-name"       type="text"      aria-label="user name"       autocomplete="off"/>
+                    <input name="first_name"   placeholder="first name"      type="text"      aria-label="first name"      autocomplete="off"/>
+                    <input name="last_name"    placeholder="last name"       type="text"      aria-label="last name"       autocomplete="off"/>
+                    <input name="new_pass"     placeholder="password"        type="password"  aria-label="password"        autocomplete="off"/>
+                    <input name="new_pass_rep" placeholder="repeat password" type="password"  aria-label="repeat password" autocomplete="off"/>
+                    <button type="submit" aria-label="Sign Up" > Sign Up </button>
+                </form>
+            </div>
+        </main>
     </body>
 
 </html>
+
+

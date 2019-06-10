@@ -1,0 +1,18 @@
+
+.dot {
+    display: inline-block;
+    background-color: #1E2446;
+    color: #dff9fb;
+    margin: 1vw calc(50% - 2vw);
+    width: 4%; height: 4vw;
+    min-width: 15px; min-height: 15px;
+    text-align: center;
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 50%;
+    border: solid #dff9fb 0.5rem;
+    border-top-color: #1E2446;
+    line-height: 0;
+    vertical-align: center;
+    box-shadow: 0 0 0 0.5rem #1E2446;
+}
